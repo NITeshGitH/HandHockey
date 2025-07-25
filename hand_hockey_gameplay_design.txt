@@ -1,0 +1,160 @@
+🎮 HAND HOCKEY DISCORD BOT – GAMEPLAY DESIGN (Prefix: H)
+
+━━━━━━━━━━━━━━━━━━━━━━
+🧩 BASIC MECHANICS
+━━━━━━━━━━━━━━━━━━━━━━
+- DM-based number guessing game.
+- Prefix command: "H"
+- Roles: ST (Striker), MF (Midfielder), DEF (Defender), GK (Goalkeeper).
+- Attacker vs Defender turns.
+- Bot DMs both players asking for a number based on role and scenario.
+- If attacker ≠ defender → attacker wins the round.
+- Same number → interception, foul, save, etc., depending on role/situation.
+- No response = 1 retry; else opponent gets advantage.
+
+━━━━━━━━━━━━━━━━━━━━━━
+🎯 RANGE LOGIC BASED ON ROLE & SCENARIO
+━━━━━━━━━━━━━━━━━━━━━━
+- ST vs DEF/MF (Dribbling/Passing) ➝ Range: 1-3
+- MF vs DEF (Passing) ➝ Range: 1-3
+- ST vs GK (Shooting/Saving) ➝ Range: 1-6
+- ST vs MF (Quick Pass) ➝ Range: 1-2
+- ST vs DEF (Corner Kick) ➝ Range: 4-6
+- GK Interception ➝ Range: 1-3
+- Any Off-side call scenario ➝ Random event
+- Set pieces like Free hits, Corners, and Penalties → Custom logic
+
+━━━━━━━━━━━━━━━━━━━━━━
+🛠️ PREFIX COMMAND STRUCTURE (H<command>)
+━━━━━━━━━━━━━━━━━━━━━━
+
+📌 Match Management
+---------------------
+Hcreate_match           ➝ Host creates a match.
+Hjoin_match             ➝ Join an open match.
+Hdelete_match           ➝ Delete match (Host only).
+Hset_team_name <A/B> <name> ➝ Change team name.
+Hassign_captain <A/B> <@mention> ➝ Assign captain to team.
+Htransfer_captain <@mention> ➝ Transfer captaincy.
+
+📌 Team & Roles Setup
+---------------------
+Hshuffle_players        ➝ Randomly distribute players into teams.
+Hassign_role <A/B> <@mention> <ST/MF/DEF/GK> ➝ Assign player role.
+Hplayer_list            ➝ Show player list with roles and captain flag.
+
+📌 Game Flow
+---------------------
+Htoss                   ➝ Initiate toss by host or captain.
+Hchoose_action attack/defend ➝ Choose action after toss win.
+Hstart_match            ➝ Start match after setup complete.
+Hsubstitute <OUT> <IN>  ➝ Substitute players in mid-game.
+Hscorecard              ➝ Display live scoreboard.
+Hprofile <@mention>     ➝ View player profile & stats.
+
+━━━━━━━━━━━━━━━━━━━━━━
+🧠 DM FLOW (Turn-Based)
+━━━━━━━━━━━━━━━━━━━━━━
+Bot DMs both <Player1> and <Player2>:
+
+"You're up! Enter your action (1-3) within 15s."
+
+- Example 1:
+<Player1> chose: 3  
+<Player2> chose: 2  
+→ Result:  
+"⚡ <Player1> dribbled past <Player2>!"
+→ Channel:  
+"<Player1>'s last action ➝ 3  
+<Player2>'s last action ➝ 2"
+
+- Example 2:
+<Player2> didn’t respond  
+→ Result:  
+"⏳ <Player2>, respond within 10s or risk conceding!"  
+(if no response)  
+"🚀 <Player1> breaks through! No response from <Player2>."
+
+━━━━━━━━━━━━━━━━━━━━━━
+🎤 COMMENTARY TYPES
+━━━━━━━━━━━━━━━━━━━━━━
+
+1. Dribble Passed:
+⚡ <Player1> has dribbled past <Player2>!  
+<Player1>'s last action ➝ 3  
+<Player2>'s last action ➝ 2
+
+2. Interception:
+🔁 <Player2> intercepted <Player1>'s pass!  
+<Player1>'s last action ➝ 4  
+<Player2>'s last action ➝ 4
+
+3. Foul:
+🚫 <Player2> has fouled <Player1>! ⚠️  
+<Player1>'s last action ➝ 1  
+<Player2>'s last action ➝ 3
+
+4. Save:
+🧤 <Player2> saves a rocket shot from <Player1>!  
+<Player1>'s last action ➝ 5  
+<Player2>'s last action ➝ 5
+
+5. Off-side:
+🚩 Off-side! <Player1> ran ahead of the play.
+
+6. Corner:
+🏁 Corner won by <Player1> after a block by <Player2>!
+
+━━━━━━━━━━━━━━━━━━━━━━
+📊 PLAYER PROFILE (STATS)
+━━━━━━━━━━━━━━━━━━━━━━
+- Matches Played
+- Matches Won
+- Matches Lost
+- Goals
+- Assists
+- Saves
+- Tackles
+- Interceptions
+- Hat-tricks
+- MVPs
+- Rating (6.0 - 10.0)
+
+━━━━━━━━━━━━━━━━━━━━━━
+📁 DATABASE STRUCTURE (MongoDB)
+━━━━━━━━━━━━━━━━━━━━━━
+
+🗂 players Collection
+{
+  user_id: "123456",
+  username: "player1",
+  matches_played: 20,
+  goals: 5,
+  saves: 3,
+  assists: 4,
+  tackles: 10,
+  interceptions: 6,
+  mvps: 2,
+  rating: 7.45
+}
+
+🗂 matches Collection
+{
+  match_id: "abc123",
+  host: "123456",
+  teams: {
+    A: {
+      name: "Ice Breakers",
+      players: [
+        { user_id: "111", role: "ST", is_captain: true }
+      ]
+    },
+    B: {
+      name: "Fire Blazers",
+      players: [...]
+    }
+  },
+  score: { A: 0, B: 1 },
+  status: "ongoing",
+  events: [...]
+}
